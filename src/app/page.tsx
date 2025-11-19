@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { products } from "@/lib/data";
 import { ArrowRight, Truck, Shield, RefreshCw, Star, Check } from "lucide-react";
+import { ProductCard } from "@/components/product-card";
 
 export default function Home() {
   const featuredProducts = products.slice(0, 3);
@@ -108,29 +109,7 @@ export default function Home() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {featuredProducts.map((product) => (
-              <Link key={product.id} href={`/products/${product.id}`} className="group">
-                <Card className="h-full overflow-hidden transition-all hover:shadow-lg border-muted">
-                  <div className="aspect-square relative overflow-hidden bg-muted">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                    />
-                  </div>
-                  <CardHeader className="p-5">
-                    <CardTitle className="line-clamp-1 text-lg">{product.name}</CardTitle>
-                    <p className="text-sm text-muted-foreground mt-1">{product.category}</p>
-                  </CardHeader>
-                  <CardContent className="p-5 pt-0">
-                    <p className="font-bold text-xl">${product.price.toFixed(2)}</p>
-                  </CardContent>
-                  <CardFooter className="p-5 pt-0">
-                    <Button className="w-full opacity-0 group-hover:opacity-100 transition-opacity">
-                      View Details
-                    </Button>
-                  </CardFooter>
-                </Card>
-              </Link>
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
         </div>

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { WishlistButton } from "@/components/wishlist-button";
+import { ProductCard } from "@/components/product-card";
 import { Suspense } from "react";
 
 function ProductGrid() {
@@ -54,35 +55,7 @@ function ProductGrid() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
         {filteredProducts.map((product) => (
-          <Link key={product.id} href={`/products/${product.id}`} className="group">
-            <Card className="h-full overflow-hidden transition-all hover:shadow-lg border-muted">
-              <div className="aspect-square relative overflow-hidden bg-muted">
-                <WishlistButton product={product} />
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                />
-                {product.price > 200 && (
-                  <Badge className="absolute top-3 right-3 bg-primary text-primary-foreground">
-                    Premium
-                  </Badge>
-                )}
-              </div>
-              <CardHeader className="p-5">
-                <CardTitle className="line-clamp-1 text-base font-semibold">{product.name}</CardTitle>
-                <p className="text-xs text-muted-foreground mt-1">{product.category}</p>
-              </CardHeader>
-              <CardContent className="p-5 pt-0">
-                <p className="font-bold text-lg">${product.price.toFixed(2)}</p>
-              </CardContent>
-              <CardFooter className="p-4 pt-0">
-                <Button variant="secondary" className="w-full opacity-0 group-hover:opacity-100 transition-opacity">
-                  View Details
-                </Button>
-              </CardFooter>
-            </Card>
-          </Link>
+          <ProductCard key={product.id} product={product} />
         ))}
       </div>
 
