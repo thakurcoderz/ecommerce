@@ -3,18 +3,19 @@ import { Separator } from "@/components/ui/separator";
 
 export default function PrivacyPolicyPage() {
   return (
-    <div className="container py-16 px-4 max-w-4xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">Privacy Policy</h1>
-        <p className="text-muted-foreground">Last updated: January 15, 2024</p>
+    <div className="page-shell py-12 md:py-16 lg:py-20">
+      <div className="mb-10 max-w-3xl space-y-4">
+        <p className="eyebrow">Legal</p>
+        <h1 className="section-display">Privacy policy</h1>
+        <p className="lead-copy">Last updated: January 15, 2024</p>
       </div>
 
-      <Card className="border-muted">
+      <Card className="rounded-[28px]">
         <CardContent className="p-6 md:p-8 space-y-8">
           <section>
             <h2 className="text-2xl font-semibold mb-4">Introduction</h2>
             <p className="text-muted-foreground leading-relaxed">
-              LuxeStore ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains
+              LuxeStore (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) is committed to protecting your privacy. This Privacy Policy explains
               how we collect, use, disclose, and safeguard your information when you visit our website and use our services.
             </p>
           </section>
@@ -139,7 +140,7 @@ export default function PrivacyPolicyPage() {
           <Separator />
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">8. Children's Privacy</h2>
+            <h2 className="text-2xl font-semibold mb-4">8. Children&apos;s Privacy</h2>
             <p className="text-muted-foreground leading-relaxed">
               Our services are not directed to children under 13. We do not knowingly collect personal information from
               children. If you believe we have collected information from a child, please contact us immediately.
@@ -162,7 +163,7 @@ export default function PrivacyPolicyPage() {
             <h2 className="text-2xl font-semibold mb-4">10. Changes to This Policy</h2>
             <p className="text-muted-foreground leading-relaxed">
               We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new
-              policy on this page and updating the "Last updated" date. Your continued use of our services constitutes
+              policy on this page and updating the &quot;Last updated&quot; date. Your continued use of our services constitutes
               acceptance of the updated policy.
             </p>
           </section>

@@ -37,17 +37,17 @@ export function WishlistButton({ product, variant = "icon", className }: Wishlis
     return (
       <Button
         variant="ghost"
-        size="icon"
+        size="icon-sm"
         className={cn(
-          "absolute top-2 right-2 z-10 bg-background/80 hover:bg-background rounded-full transition-all",
+          "absolute right-3 top-3 z-10 border border-white/10 bg-[#02090A]/80 backdrop-blur-sm hover:bg-[#102620]",
           className
         )}
         onClick={handleClick}
       >
         <Heart
           className={cn(
-            "h-5 w-5 transition-colors",
-            inWishlist ? "fill-current text-red-500" : "text-muted-foreground"
+            "h-4 w-4 transition-colors",
+            inWishlist ? "fill-current text-[#36F4A4]" : "text-white/70"
           )}
         />
       </Button>
@@ -56,7 +56,7 @@ export function WishlistButton({ product, variant = "icon", className }: Wishlis
 
   return (
     <Button
-      variant={inWishlist ? "default" : "outline"}
+      variant={inWishlist ? "secondary" : "outline"}
       size="lg"
       className={cn("w-full md:w-auto", className)}
       onClick={handleClick}
@@ -67,7 +67,7 @@ export function WishlistButton({ product, variant = "icon", className }: Wishlis
           inWishlist && "fill-current"
         )}
       />
-      {inWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
+      {inWishlist ? "Saved to wishlist" : "Save for later"}
     </Button>
   );
 }

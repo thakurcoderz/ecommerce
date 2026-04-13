@@ -2,29 +2,69 @@
 
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
+import { useState } from "react";
 import { products } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ShoppingCart, Check, Star, Truck, Shield, RefreshCw, Package } from "lucide-react";
+import { ShoppingCart, Check, Star, Truck, Shield, RefreshCw, Package, ArrowLeft } from "lucide-react";
 import { useCart } from "@/lib/cart-store";
 import { WishlistButton } from "@/components/wishlist-button";
-import { useState } from "react";
 import { Separator } from "@/components/ui/separator";
+import { ProductCard } from "@/components/product-card";
+import { SectionHeading } from "@/components/ui/section-heading";
+import { TheaterPanel } from "@/components/ui/theater-panel";
+import { EmptyStatePanel } from "@/components/ui/empty-state-panel";
+
+const featurePoints = [
+  "Premium materials and meticulous construction",
+  "1-year manufacturer warranty included",
+  "Free shipping on orders over $50",
+  "30-day money-back guarantee",
+];
+
+const reviewData = [
+  {
+    name: "Sarah Johnson",
+    rating: 5,
+    date: "2 weeks ago",
+    review: "Absolutely love this product. The build quality feels exceptional and the experience matches the presentation.",
+  },
+  {
+    name: "Michael Chen",
+    rating: 5,
+    date: "1 month ago",
+    review: "Fast delivery, thoughtful packaging, and a product that looks even better in person.",
+  },
+  {
+    name: "Emma Davis",
+    rating: 4,
+    date: "2 months ago",
+    review: "Well made and easy to recommend. I would happily order from this collection again.",
+  },
+];
 
 export default function ProductDetailPage() {
   const params = useParams();
   const { addItem } = useCart();
   const [isAdded, setIsAdded] = useState(false);
 
-  const product = products.find((p) => p.id === params.id);
+  const product = products.find((entry) => entry.id === params.id);
 
   if (!product) {
     return (
-      <div className="container py-20 text-center max-w-2xl mx-auto px-4">
-        <h1 className="text-2xl font-bold mb-4">Product not found</h1>
-        <Button onClick={() => window.history.back()}>Go Back</Button>
+      <div className="page-shell py-20">
+        <EmptyStatePanel
+          title="Product not found"
+          description="The product you selected is no longer available in this catalog view."
+          actions={
+            <Button onClick={() => window.history.back()}>
+              <ArrowLeft className="h-4 w-4" />
+              Go back
+            </Button>
+          }
+        />
       </div>
     );
   }
@@ -40,329 +80,243 @@ export default function ProductDetailPage() {
     setTimeout(() => setIsAdded(false), 2000);
   };
 
-  // Get related products (same category, different id)
   const relatedProducts = products
-    .filter((p) => p.category === product.category && p.id !== product.id)
+    .filter((entry) => entry.category === product.category && entry.id !== product.id)
     .slice(0, 3);
 
   return (
-    <div className="container py-10 md:py-16 lg:py-20 px-4 max-w-7xl mx-auto">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 mb-16">
-        {/* Image Gallery */}
-        <div className="space-y-4">
-          <div className="aspect-square bg-muted rounded-lg overflow-hidden border shadow-md">
-            <img
+    <div className="page-shell py-12 md:py-16 lg:py-20">
+      <div className="mb-6 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+        <Link href="/products" className="hover:text-white">Products</Link>
+        <span>/</span>
+        <span>{product.category}</span>
+        <span>/</span>
+        <span className="text-white">{product.name}</span>
+      </div>
+
+      <div className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
+        <TheaterPanel className="rounded-[32px] p-4 md:p-5">
+          <div className="relative aspect-square overflow-hidden rounded-[28px] border border-white/8 bg-[#061A1C]">
+            <Image
               src={product.image}
               alt={product.name}
-              className="w-full h-full object-cover"
+              fill
+              sizes="(max-width: 1024px) 100vw, 52vw"
+              className="object-cover"
             />
           </div>
-          <div className="grid grid-cols-4 gap-3">
-            {[1, 2, 3, 4].map((i) => (
-              <div
-                key={i}
-                className="aspect-square bg-muted rounded-md overflow-hidden border cursor-pointer opacity-70 hover:opacity-100 transition-all hover:border-primary"
-              >
-                <img
+          <div className="mt-4 grid grid-cols-4 gap-3">
+            {[1, 2, 3, 4].map((thumbnail) => (
+              <div key={thumbnail} className="relative aspect-square overflow-hidden rounded-2xl border border-white/8 bg-[#061A1C]">
+                <Image
                   src={product.image}
-                  alt={`${product.name} view ${i}`}
-                  className="w-full h-full object-cover"
+                  alt={`${product.name} view ${thumbnail}`}
+                  fill
+                  sizes="(max-width: 1024px) 25vw, 12vw"
+                  className="object-cover opacity-80 transition-opacity hover:opacity-100"
                 />
               </div>
             ))}
           </div>
-        </div>
+        </TheaterPanel>
 
-        {/* Product Info */}
-        <div className="flex flex-col justify-center">
-          <div className="mb-8">
-            <Badge variant="secondary" className="mb-3">
-              {product.category}
-            </Badge>
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight mb-3">
-              {product.name}
-            </h1>
-            <div className="flex items-center gap-2 mb-5">
-              <div className="flex text-yellow-500">
+        <div className="space-y-8">
+          <div className="space-y-4">
+            <Badge className="rounded-md px-4 py-2 text-xs tracking-[0.22em]">{product.category}</Badge>
+            <h1 className="section-display">{product.name}</h1>
+            <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+              <div className="flex items-center gap-1 text-[#C1FBD4]">
                 {[1, 2, 3, 4, 5].map((star) => (
-                  <Star key={star} className="w-4 h-4 fill-current" />
+                  <Star key={star} className="h-4 w-4 fill-current" />
                 ))}
               </div>
-              <span className="text-sm font-medium">4.9</span>
-              <span className="text-sm text-muted-foreground">(128 reviews)</span>
+              <span className="text-white">4.9</span>
+              <span>(128 reviews)</span>
             </div>
-            <p className="text-3xl md:text-4xl font-bold text-primary">
-              ${product.price.toFixed(2)}
-            </p>
+            <p className="number-display text-6xl text-white">${product.price.toFixed(2)}</p>
+            <p className="lead-copy">{product.description}</p>
           </div>
 
-          <Separator className="mb-8" />
+          <TheaterPanel className="rounded-[28px] p-6">
+            <p className="eyebrow">Included with every order</p>
+            <div className="mt-5 space-y-4">
+              {featurePoints.map((point) => (
+                <div key={point} className="flex items-start gap-3">
+                  <div className="mt-1 flex h-6 w-6 items-center justify-center rounded-full border border-[#36F4A4]/30 bg-[#36F4A4]/12">
+                    <Check className="h-3.5 w-3.5 text-[#36F4A4]" />
+                  </div>
+                  <p className="text-sm leading-7 text-white/84">{point}</p>
+                </div>
+              ))}
+            </div>
+          </TheaterPanel>
 
-          <p className="text-muted-foreground text-base md:text-lg mb-8 leading-relaxed">
-            {product.description}
-          </p>
-
-          {/* Key Features */}
-          <div className="mb-8">
-            <h3 className="font-semibold text-lg mb-4">Key Features</h3>
-            <ul className="space-y-2">
-              <li className="flex items-start gap-2">
-                <Check className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                <span className="text-sm text-muted-foreground">
-                  Premium quality materials and construction
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                <span className="text-sm text-muted-foreground">
-                  1-year manufacturer warranty included
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                <span className="text-sm text-muted-foreground">
-                  Free shipping on orders over $50
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                <span className="text-sm text-muted-foreground">
-                  30-day money-back guarantee
-                </span>
-              </li>
-            </ul>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <Button size="lg" className="flex-1" onClick={handleAddToCart} disabled={isAdded}>
+              {isAdded ? (
+                <>
+                  <Check className="h-5 w-5" /> Added to cart
+                </>
+              ) : (
+                <>
+                  <ShoppingCart className="h-5 w-5" /> Add to cart
+                </>
+              )}
+            </Button>
+            <WishlistButton product={product} variant="default" className="sm:w-auto" />
           </div>
 
-          <div className="space-y-5">
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Button
-                size="lg"
-                className="flex-1 text-base h-12 px-10"
-                onClick={handleAddToCart}
-                disabled={isAdded}
-              >
-                {isAdded ? (
-                  <>
-                    <Check className="mr-2 h-5 w-5" /> Added to Cart
-                  </>
-                ) : (
-                  <>
-                    <ShoppingCart className="mr-2 h-5 w-5" /> Add to Cart
-                  </>
-                )}
-              </Button>
-              <WishlistButton product={product} variant="default" className="h-12 px-10" />
-            </div>
+          <div className="grid gap-4 sm:grid-cols-3">
+            {[
+              { icon: Truck, title: "Free shipping", text: "Orders over $50" },
+              { icon: Shield, title: "Secure payment", text: "Protected checkout" },
+              { icon: RefreshCw, title: "Easy returns", text: "30-day policy" },
+            ].map((item) => {
+              const Icon = item.icon;
+
+              return (
+                <TheaterPanel key={item.title} className="rounded-[24px] p-5">
+                  <Icon className="h-5 w-5 text-[#36F4A4]" />
+                  <p className="mt-4 text-base text-white">{item.title}</p>
+                  <p className="mt-2 text-sm text-muted-foreground">{item.text}</p>
+                </TheaterPanel>
+              );
+            })}
           </div>
         </div>
       </div>
 
-      {/* Trust Badges */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
-        <Card className="border-muted">
-          <CardContent className="p-6 flex flex-col items-center text-center">
-            <Truck className="h-8 w-8 mb-3 text-primary" />
-            <h4 className="font-semibold text-sm mb-1">Free Shipping</h4>
-            <p className="text-xs text-muted-foreground">On orders over $50</p>
-          </CardContent>
-        </Card>
-        <Card className="border-muted">
-          <CardContent className="p-6 flex flex-col items-center text-center">
-            <Shield className="h-8 w-8 mb-3 text-primary" />
-            <h4 className="font-semibold text-sm mb-1">Secure Payment</h4>
-            <p className="text-xs text-muted-foreground">100% protected</p>
-          </CardContent>
-        </Card>
-        <Card className="border-muted">
-          <CardContent className="p-6 flex flex-col items-center text-center">
-            <RefreshCw className="h-8 w-8 mb-3 text-primary" />
-            <h4 className="font-semibold text-sm mb-1">Easy Returns</h4>
-            <p className="text-xs text-muted-foreground">30-day policy</p>
-          </CardContent>
-        </Card>
-        <Card className="border-muted">
-          <CardContent className="p-6 flex flex-col items-center text-center">
-            <Package className="h-8 w-8 mb-3 text-primary" />
-            <h4 className="font-semibold text-sm mb-1">1-Year Warranty</h4>
-            <p className="text-xs text-muted-foreground">Full coverage</p>
-          </CardContent>
-        </Card>
+      <div className="mt-16 grid gap-4 md:grid-cols-4">
+        {[
+          { icon: Truck, title: "Free shipping", text: "On orders over $50" },
+          { icon: Shield, title: "Secure payment", text: "Protected by trusted processors" },
+          { icon: RefreshCw, title: "Easy returns", text: "Clear 30-day policy" },
+          { icon: Package, title: "1-year warranty", text: "Coverage for daily confidence" },
+        ].map((item) => {
+          const Icon = item.icon;
+
+          return (
+            <TheaterPanel key={item.title} className="rounded-[24px] p-6">
+              <Icon className="h-6 w-6 text-[#36F4A4]" />
+              <h3 className="mt-4 text-lg font-[340] tracking-[-0.03em] text-white">{item.title}</h3>
+              <p className="mt-2 text-sm leading-7 text-muted-foreground">{item.text}</p>
+            </TheaterPanel>
+          );
+        })}
       </div>
 
-      {/* Product Details Tabs */}
-      <div className="mb-16">
+      <div className="mt-16">
         <Tabs defaultValue="description" className="w-full">
-          <TabsList className="grid w-full md:w-auto md:inline-grid grid-cols-3 mb-8">
+          <TabsList className="grid w-full grid-cols-3 md:w-auto">
             <TabsTrigger value="description">Description</TabsTrigger>
             <TabsTrigger value="specifications">Specifications</TabsTrigger>
             <TabsTrigger value="reviews">Reviews</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="description" className="space-y-4">
-            <h3 className="text-xl font-semibold mb-4">Product Description</h3>
-            <p className="text-muted-foreground leading-relaxed">
-              {product.description}
-            </p>
-            <p className="text-muted-foreground leading-relaxed">
-              This premium product combines cutting-edge technology with timeless design.
-              Crafted with attention to detail, it delivers exceptional performance and durability.
-              Whether you're a professional or an enthusiast, this product will exceed your expectations.
-            </p>
-            <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-              <li>Ergonomically designed for maximum comfort</li>
-              <li>Built with sustainable and eco-friendly materials</li>
-              <li>Tested for quality and performance standards</li>
-              <li>Compatible with various accessories and add-ons</li>
-            </ul>
+          <TabsContent value="description" className="mt-6">
+            <TheaterPanel className="rounded-[28px] p-6 md:p-8">
+              <h3 className="text-3xl font-[340] tracking-[-0.04em] text-white">Product description</h3>
+              <div className="mt-5 space-y-4 text-sm leading-8 text-white/82">
+                <p>{product.description}</p>
+                <p>
+                  This product balances contemporary functionality with a restrained premium finish. It is designed to feel composed on the page and dependable in daily use.
+                </p>
+                <ul className="space-y-2 text-muted-foreground">
+                  <li>Ergonomically designed for comfort and ease</li>
+                  <li>Crafted with durable materials and quality checks</li>
+                  <li>Styled to pair well with adjacent collections</li>
+                  <li>Protected by clear delivery and return policies</li>
+                </ul>
+              </div>
+            </TheaterPanel>
           </TabsContent>
 
-          <TabsContent value="specifications" className="space-y-4">
-            <h3 className="text-xl font-semibold mb-4">Technical Specifications</h3>
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="space-y-3">
-                <div className="flex justify-between border-b pb-2">
-                  <span className="font-medium">Brand</span>
-                  <span className="text-muted-foreground">LuxeStore</span>
-                </div>
-                <div className="flex justify-between border-b pb-2">
-                  <span className="font-medium">Category</span>
-                  <span className="text-muted-foreground">{product.category}</span>
-                </div>
-                <div className="flex justify-between border-b pb-2">
-                  <span className="font-medium">Model Number</span>
-                  <span className="text-muted-foreground">LS-{product.id.toUpperCase()}-2024</span>
-                </div>
-                <div className="flex justify-between border-b pb-2">
-                  <span className="font-medium">Warranty</span>
-                  <span className="text-muted-foreground">1 Year</span>
-                </div>
-              </div>
-              <div className="space-y-3">
-                <div className="flex justify-between border-b pb-2">
-                  <span className="font-medium">Material</span>
-                  <span className="text-muted-foreground">Premium Quality</span>
-                </div>
-                <div className="flex justify-between border-b pb-2">
-                  <span className="font-medium">Color</span>
-                  <span className="text-muted-foreground">As Shown</span>
-                </div>
-                <div className="flex justify-between border-b pb-2">
-                  <span className="font-medium">Weight</span>
-                  <span className="text-muted-foreground">Lightweight</span>
-                </div>
-                <div className="flex justify-between border-b pb-2">
-                  <span className="font-medium">Package</span>
-                  <span className="text-muted-foreground">Retail Box</span>
-                </div>
-              </div>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="reviews" className="space-y-6">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold">Customer Reviews</h3>
-              <Button variant="outline" size="sm">Write a Review</Button>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-8 mb-8">
-              <div className="md:col-span-1">
-                <div className="text-center p-6 bg-muted/30 rounded-lg">
-                  <div className="text-5xl font-bold mb-2">4.9</div>
-                  <div className="flex justify-center text-yellow-500 mb-2">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star key={star} className="w-5 h-5 fill-current" />
-                    ))}
-                  </div>
-                  <p className="text-sm text-muted-foreground">Based on 128 reviews</p>
-                </div>
-              </div>
-
-              <div className="md:col-span-2 space-y-3">
-                {[5, 4, 3, 2, 1].map((rating) => (
-                  <div key={rating} className="flex items-center gap-3">
-                    <span className="text-sm font-medium w-8">{rating} ★</span>
-                    <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-primary"
-                        style={{ width: `${rating === 5 ? 80 : rating === 4 ? 15 : 5}%` }}
-                      />
+          <TabsContent value="specifications" className="mt-6">
+            <TheaterPanel className="rounded-[28px] p-6 md:p-8">
+              <h3 className="text-3xl font-[340] tracking-[-0.04em] text-white">Technical specifications</h3>
+              <div className="mt-6 grid gap-6 md:grid-cols-2">
+                <div className="space-y-4">
+                  {[
+                    ["Brand", "LuxeStore"],
+                    ["Category", product.category],
+                    ["Model number", `LS-${product.id.toUpperCase()}-2026`],
+                    ["Warranty", "1 Year"],
+                  ].map(([label, value]) => (
+                    <div key={label}>
+                      <div className="flex items-center justify-between gap-3 text-sm text-white">
+                        <span>{label}</span>
+                        <span className="text-muted-foreground">{value}</span>
+                      </div>
+                      <Separator className="mt-3 bg-white/8" />
                     </div>
-                    <span className="text-sm text-muted-foreground w-12 text-right">
-                      {rating === 5 ? "80%" : rating === 4 ? "15%" : "5%"}
-                    </span>
-                  </div>
-                ))}
+                  ))}
+                </div>
+                <div className="space-y-4">
+                  {[
+                    ["Material", "Premium quality"],
+                    ["Color", "As shown"],
+                    ["Weight", "Lightweight"],
+                    ["Packaging", "Retail presentation box"],
+                  ].map(([label, value]) => (
+                    <div key={label}>
+                      <div className="flex items-center justify-between gap-3 text-sm text-white">
+                        <span>{label}</span>
+                        <span className="text-muted-foreground">{value}</span>
+                      </div>
+                      <Separator className="mt-3 bg-white/8" />
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            </TheaterPanel>
+          </TabsContent>
 
-            {/* Sample Reviews */}
-            <div className="space-y-6">
-              {[
-                {
-                  name: "Sarah Johnson",
-                  rating: 5,
-                  date: "2 weeks ago",
-                  review: "Absolutely love this product! The quality exceeded my expectations and it arrived quickly. Highly recommend!"
-                },
-                {
-                  name: "Michael Chen",
-                  rating: 5,
-                  date: "1 month ago",
-                  review: "Great value for money. The build quality is excellent and it works perfectly. Very satisfied with my purchase."
-                },
-                {
-                  name: "Emma Davis",
-                  rating: 4,
-                  date: "2 months ago",
-                  review: "Good product overall. Does what it's supposed to do. Only minor issue is the packaging could be better."
-                }
-              ].map((review, idx) => (
-                <Card key={idx} className="border-muted">
-                  <CardContent className="p-6">
-                    <div className="flex items-start justify-between mb-3">
+          <TabsContent value="reviews" className="mt-6">
+            <div className="grid gap-6 lg:grid-cols-[0.38fr_0.62fr]">
+              <TheaterPanel className="rounded-[28px] p-6 md:p-8">
+                <p className="eyebrow">Review summary</p>
+                <p className="number-display mt-4 text-6xl text-white">4.9</p>
+                <div className="mt-4 flex items-center gap-1 text-[#C1FBD4]">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star key={star} className="h-5 w-5 fill-current" />
+                  ))}
+                </div>
+                <p className="mt-3 text-sm text-muted-foreground">Based on 128 verified reviews</p>
+              </TheaterPanel>
+
+              <div className="space-y-4">
+                {reviewData.map((review) => (
+                  <TheaterPanel key={review.name} className="rounded-[24px] p-6">
+                    <div className="flex flex-wrap items-start justify-between gap-3">
                       <div>
-                        <h4 className="font-semibold">{review.name}</h4>
-                        <div className="flex text-yellow-500 mt-1">
-                          {[...Array(review.rating)].map((_, i) => (
-                            <Star key={i} className="w-4 h-4 fill-current" />
+                        <p className="text-base text-white">{review.name}</p>
+                        <div className="mt-2 flex items-center gap-1 text-[#C1FBD4]">
+                          {[...Array(review.rating)].map((_, index) => (
+                            <Star key={index} className="h-4 w-4 fill-current" />
                           ))}
                         </div>
                       </div>
                       <span className="text-sm text-muted-foreground">{review.date}</span>
                     </div>
-                    <p className="text-muted-foreground">{review.review}</p>
-                  </CardContent>
-                </Card>
-              ))}
+                    <p className="mt-4 text-sm leading-7 text-white/82">{review.review}</p>
+                  </TheaterPanel>
+                ))}
+              </div>
             </div>
           </TabsContent>
         </Tabs>
       </div>
 
-      {/* Related Products */}
       {relatedProducts.length > 0 && (
-        <div>
-          <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-8">Related Products</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="mt-20">
+          <SectionHeading
+            eyebrow="Related products"
+            title="Continue exploring this collection."
+            className="mb-10 max-w-2xl"
+          />
+          <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
             {relatedProducts.map((relatedProduct) => (
-              <Link key={relatedProduct.id} href={`/products/${relatedProduct.id}`} className="group">
-                <Card className="h-full overflow-hidden transition-all hover:shadow-lg border-muted">
-                  <div className="aspect-square relative overflow-hidden bg-muted">
-                    <img
-                      src={relatedProduct.image}
-                      alt={relatedProduct.name}
-                      className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                    />
-                  </div>
-                  <CardContent className="p-5">
-                    <h3 className="font-semibold text-lg mb-2 line-clamp-1">{relatedProduct.name}</h3>
-                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-                      {relatedProduct.description}
-                    </p>
-                    <p className="font-bold text-xl">${relatedProduct.price.toFixed(2)}</p>
-                  </CardContent>
-                </Card>
-              </Link>
+              <ProductCard key={relatedProduct.id} product={relatedProduct} />
             ))}
           </div>
         </div>

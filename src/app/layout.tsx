@@ -6,11 +6,15 @@ import { Footer } from "@/components/footer";
 import { CartProvider } from "@/lib/cart-store";
 import { WishlistProvider } from "@/lib/wishlist-store";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-body",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
-  title: "LuxeStore - Premium E-commerce",
-  description: "Experience the best in online shopping",
+  title: "LuxeStore — Dark luxury commerce",
+  description: "A cinematic storefront for premium essentials, designed with a dark-first Shopify-inspired system.",
 };
 
 export default function RootLayout({
@@ -19,8 +23,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className} suppressHydrationWarning>
+    <html lang="en" className="dark">
+      <body className={`${inter.variable} antialiased`} suppressHydrationWarning>
         <CartProvider>
           <WishlistProvider>
             <div className="flex min-h-screen flex-col">

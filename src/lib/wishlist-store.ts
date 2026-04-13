@@ -23,21 +23,24 @@ type WishlistContextType = {
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined);
 
 export function WishlistProvider({ children }: { children: React.ReactNode }) {
-  const [items, setItems] = useState<WishlistItem[]>([]);
-
-  // Load wishlist from local storage on mount
-  useEffect(() => {
-    const savedWishlist = localStorage.getItem("wishlist");
-    if (savedWishlist) {
-      try {
-        setItems(JSON.parse(savedWishlist));
-      } catch (e) {
-        console.error("Failed to parse wishlist from local storage", e);
-      }
+  const [items, setItems] = useState<WishlistItem[]>(() => {
+    if (typeof window === "undefined") {
+      return [];
     }
-  }, []);
 
-  // Save wishlist to local storage whenever it changes
+    const savedWishlist = window.localStorage.getItem("wishlist");
+    if (!savedWishlist) {
+      return [];
+    }
+
+    try {
+      return JSON.parse(savedWishlist) as WishlistItem[];
+    } catch (e) {
+      console.error("Failed to parse wishlist from local storage", e);
+      return [];
+    }
+  });
+
   useEffect(() => {
     localStorage.setItem("wishlist", JSON.stringify(items));
   }, [items]);
@@ -46,7 +49,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     setItems((prev) => {
       const existing = prev.find((item) => item.id === newItem.id);
       if (existing) {
-        return prev; // Item already in wishlist
+        return prev;
       }
       return [...prev, newItem];
     });

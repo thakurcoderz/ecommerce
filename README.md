@@ -1,74 +1,109 @@
-# Landing App
+# LuxeStore
 
-A modern, responsive e-commerce landing page application built with **Next.js 16**, **Tailwind CSS 4**, and **Radix UI**.
+A dark-first e-commerce frontend built with Next.js App Router, featuring a Shopify-inspired visual system, full catalog browsing, wishlist/cart flows, auth pages, checkout, and polished empty/not-found states.
 
-## Overview
+## Project Overview
 
-This project is a fully functional e-commerce frontend designed to provide a seamless user experience. It features a clean design, intuitive navigation, and essential e-commerce functionalities like browsing products, managing a cart, and user authentication.
+LuxeStore is a frontend-focused commerce experience with:
 
-## Key Features
+- Cinematic dark UI system (theater cards, pill controls, strict spacing rhythm)
+- Product catalog with category filters and sorting
+- Product detail pages with tabs and related items
+- Cart, wishlist, and checkout flows
+- Auth pages (login, signup, forgot password)
+- Legal pages and custom not-found pages
 
-- **Product Management**: Browse product listings and view detailed product information.
-- **Shopping Cart**: Add items to cart, view summary, and proceed to checkout.
-- **Checkout Flow**: user-friendly checkout process.
-- **User Authentication**:
-  - Sign Up and Login pages
-  - Forgot Password functionality
-- **Wishlist**: Save favorite items for later.
-- **Static Content**: Dedicated pages for Privacy Policy and Terms of Service.
-- **Responsive Design**: Optimized for all device sizes.
+This project uses local state and browser storage for cart/wishlist interactions (no backend required).
+
+## Prerequisites
+
+Before running the project, make sure you have:
+
+- Node.js `>=20` (recommended: latest LTS)
+- npm `>=10` (or pnpm/yarn/bun if preferred)
+- Git
+
+Optional but recommended:
+
+- VS Code + ESLint extension
+- Modern Chromium-based browser for best local preview fidelity
 
 ## Tech Stack
 
-- **Framework**: [Next.js 16](https://nextjs.org/) (App Router)
-- **Library**: [React 19](https://react.dev/)
-- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
-- **UI Components**: [Radix UI](https://www.radix-ui.com/) Primitives
-- **Icons**: [Lucide React](https://lucide.dev/)
-- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- Framework: [Next.js 16](https://nextjs.org/) (App Router)
+- UI: [React 19](https://react.dev/)
+- Styling: [Tailwind CSS 4](https://tailwindcss.com/)
+- Primitives: [Radix UI](https://www.radix-ui.com/primitives)
+- Icons: [Lucide React](https://lucide.dev/)
+- Language: [TypeScript](https://www.typescriptlang.org/)
 
-## Getting Started
-
-First, install the dependencies:
+## Installation
 
 ```bash
 npm install
-# or
-yarn install
-# or
-pnpm install
-# or
-bun install
 ```
 
-Then, run the development server:
+## Running Locally
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000`.
+
+## Available Scripts
+
+- `npm run dev` - start dev server
+- `npm run build` - create production build
+- `npm run start` - run production server
+- `npm run lint` - run ESLint
 
 ## Project Structure
 
-The project follows the standard Next.js App Router structure:
+- `src/app` - App Router pages/routes
+  - `products`, `cart`, `wishlist`, `checkout`, `login`, `signup`, `forgot-password`
+  - `not-found.tsx` and route-level not-found pages
+- `src/components`
+  - `ui/` shared primitives + design-system components
+  - commerce components (`navbar`, `footer`, `product-card`, etc.)
+  - `auth/` auth layout wrappers
+- `src/lib`
+  - `data.ts` product seed catalog
+  - cart/wishlist state stores
 
-- `src/app`: Contains the application routes and pages (Cart, Checkout, Auth, Products, etc.).
-- `src/components`: Reusable UI components.
-  - `ui/`: Core UI primitives (often based on Radix UI).
-  - Common components like `Navbar`, `Footer`, `ProductCard`.
-- `public`: Static assets.
+## AI Agent Notes
 
-## Learn More
+- The canonical agent instruction file is `AGENTS.md`.
+- If an automation references `AGETNS.md`, that file exists as a compatibility pointer back to `AGENTS.md`.
 
-To learn more about the technologies used in this project:
+## Image Configuration
 
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
-- [Radix UI Documentation](https://www.radix-ui.com/primitives/docs/overview/introduction)
+Remote Unsplash images are used in catalog/auth visuals. Host is allowed in `next.config.ts` via `images.remotePatterns`.
+
+If you add new external image domains, update `next.config.ts` accordingly.
+
+## Notes and Troubleshooting
+
+- Hydration mismatches can happen if browser extensions inject attributes before React hydrates. Shared input fields already use hydration-safe handling.
+- Cart/wishlist data persists in `localStorage`.
+- If UI appears stale after structural changes, hard refresh (`Cmd+Shift+R` / `Ctrl+Shift+R`).
+
+## Design System Direction
+
+The UI follows a strict dark-first system with:
+
+- Layered dark surfaces (`#000000`, `#02090A`, `#061A1C`, `#102620`)
+- Neon focus accent (`#36F4A4`) used sparingly
+- Pill interaction model and soft, multi-layered elevation
+- Reusable strict components (`SectionHeading`, `TheaterPanel`, `FilterGroup`, `StatTile`, `SummaryRow`, `EmptyStatePanel`)
+
+## Validation Checklist
+
+Before shipping changes:
+
+```bash
+npm run lint
+npm run build
+```
+
+Both should pass locally.

@@ -1,25 +1,27 @@
 "use client";
 
+import Link from "next/link";
+import { useState } from "react";
+import { CheckCircle2 } from "lucide-react";
 import { useCart } from "@/lib/cart-store";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { useState } from "react";
-import Link from "next/link";
-import { CheckCircle2 } from "lucide-react";
+import { SectionHeading } from "@/components/ui/section-heading";
+import { SummaryRow } from "@/components/ui/summary-row";
+import { EmptyStatePanel } from "@/components/ui/empty-state-panel";
 
 export default function CheckoutPage() {
   const { items, total, clearCart } = useCart();
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
     setIsProcessing(true);
 
-    // Simulate API call
     setTimeout(() => {
       setIsProcessing(false);
       setIsSuccess(true);
@@ -29,101 +31,81 @@ export default function CheckoutPage() {
 
   if (isSuccess) {
     return (
-      <div className="container py-20 text-center max-w-md mx-auto">
-        <div className="flex justify-center mb-6">
-          <CheckCircle2 className="h-24 w-24 text-green-500" />
-        </div>
-        <h1 className="text-3xl font-bold mb-4">Order Confirmed!</h1>
-        <p className="text-muted-foreground mb-8">
-          Thank you for your purchase. We have sent a confirmation email with your order details.
-        </p>
-        <Link href="/">
-          <Button size="lg" className="w-full">Continue Shopping</Button>
-        </Link>
+      <div className="page-shell py-20">
+        <EmptyStatePanel
+          icon={<CheckCircle2 className="h-10 w-10 text-[#36F4A4]" />}
+          title="Order confirmed"
+          description="Thanks for your purchase. A confirmation email with order details and dispatch timing is on the way."
+          actions={
+            <Link href="/products">
+              <Button size="lg">Continue shopping</Button>
+            </Link>
+          }
+          className="max-w-2xl"
+        />
       </div>
     );
   }
 
   if (items.length === 0) {
     return (
-      <div className="container py-20 text-center">
-        <h1 className="text-2xl font-bold mb-4">Your cart is empty</h1>
-        <Link href="/products">
-          <Button>Go to Products</Button>
-        </Link>
+      <div className="page-shell py-20">
+        <EmptyStatePanel
+          title="Your cart is empty"
+          description="Add a few products before heading into checkout."
+          actions={
+            <Link href="/products">
+              <Button>Go to products</Button>
+            </Link>
+          }
+        />
       </div>
     );
   }
 
   return (
-    <div className="container py-10 px-4 max-w-7xl mx-auto">
-      <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-10">Checkout</h1>
+    <div className="page-shell py-12 md:py-16 lg:py-20">
+      <SectionHeading
+        eyebrow="Checkout"
+        title="A focused path from cart to confirmation."
+        description="Enter shipping and payment details in a clean, dark interface built to keep the next step obvious."
+        className="mb-10 max-w-2xl"
+      />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Checkout Form */}
-        <div className="lg:col-span-2">
-          <form onSubmit={handleSubmit}>
-            <Card className="mb-6">
+      <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] xl:grid-cols-[1.25fr_0.75fr]">
+        <div>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <Card className="rounded-[28px]">
               <CardHeader>
-                <CardTitle className="text-xl">Shipping Information</CardTitle>
+                <CardTitle className="text-3xl text-white">Shipping information</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-5">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <div className="space-y-2">
-                    <Label htmlFor="firstName">First Name</Label>
-                    <Input id="firstName" required placeholder="John" className="h-11" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="lastName">Last Name</Label>
-                    <Input id="lastName" required placeholder="Doe" className="h-11" />
-                  </div>
+              <CardContent className="grid gap-5">
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <Field label="First name" id="firstName" placeholder="John" />
+                  <Field label="Last name" id="lastName" placeholder="Doe" />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" required placeholder="john.doe@example.com" className="h-11" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="address">Address</Label>
-                  <Input id="address" required placeholder="123 Main St" className="h-11" />
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <div className="space-y-2">
-                    <Label htmlFor="city">City</Label>
-                    <Input id="city" required placeholder="New York" className="h-11" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="zip">ZIP Code</Label>
-                    <Input id="zip" required placeholder="10001" className="h-11" />
-                  </div>
+                <Field label="Email" id="email" type="email" placeholder="john.doe@example.com" />
+                <Field label="Address" id="address" placeholder="123 Main St" />
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <Field label="City" id="city" placeholder="New York" />
+                  <Field label="ZIP code" id="zip" placeholder="10001" />
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="mb-6">
+            <Card className="rounded-[28px]">
               <CardHeader>
-                <CardTitle className="text-xl">Payment Details</CardTitle>
+                <CardTitle className="text-3xl text-white">Payment details</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-5">
-                <div className="space-y-2">
-                  <Label htmlFor="cardName">Name on Card</Label>
-                  <Input id="cardName" required placeholder="John Doe" className="h-11" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="cardNumber">Card Number</Label>
-                  <Input id="cardNumber" required placeholder="0000 0000 0000 0000" className="h-11" />
-                </div>
-                <div className="grid grid-cols-2 gap-5">
-                  <div className="space-y-2">
-                    <Label htmlFor="expiry">Expiry Date</Label>
-                    <Input id="expiry" required placeholder="MM/YY" className="h-11" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="cvc">CVC</Label>
-                    <Input id="cvc" required placeholder="123" className="h-11" />
-                  </div>
+              <CardContent className="grid gap-5">
+                <Field label="Name on card" id="cardName" placeholder="John Doe" />
+                <Field label="Card number" id="cardNumber" placeholder="0000 0000 0000 0000" />
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <Field label="Expiry date" id="expiry" placeholder="MM/YY" />
+                  <Field label="CVC" id="cvc" placeholder="123" />
                 </div>
               </CardContent>
-              <CardFooter className="pt-6">
+              <CardFooter>
                 <Button type="submit" className="w-full" size="lg" disabled={isProcessing}>
                   {isProcessing ? "Processing..." : `Pay $${(total * 1.08).toFixed(2)}`}
                 </Button>
@@ -132,45 +114,45 @@ export default function CheckoutPage() {
           </form>
         </div>
 
-        {/* Order Summary */}
-        <div className="lg:col-span-1">
-          <Card className="sticky top-4">
+        <div>
+          <Card className="sticky top-24 rounded-[28px]">
             <CardHeader>
-              <CardTitle className="text-xl">Order Summary</CardTitle>
+              <CardTitle className="text-3xl text-white">Order summary</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-3 max-h-64 overflow-y-auto">
+            <CardContent className="space-y-5">
+              <div className="space-y-4">
                 {items.map((item) => (
-                  <div key={item.id} className="flex justify-between text-sm gap-2">
-                    <span className="text-muted-foreground">
-                      {item.quantity}x {item.name}
-                    </span>
-                    <span className="font-medium flex-shrink-0">${(item.price * item.quantity).toFixed(2)}</span>
+                  <div key={item.id} className="flex items-center justify-between gap-3 text-sm">
+                    <div>
+                      <p className="text-white">{item.name}</p>
+                      <p className="mt-1 text-muted-foreground">{item.quantity} × ${item.price.toFixed(2)}</p>
+                    </div>
+                    <span className="text-white">${(item.price * item.quantity).toFixed(2)}</span>
                   </div>
                 ))}
               </div>
-              <Separator className="my-4" />
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Subtotal</span>
-                <span className="font-medium">${total.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Shipping</span>
-                <span className="font-medium text-green-600">Free</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Tax (8%)</span>
-                <span className="font-medium">${(total * 0.08).toFixed(2)}</span>
-              </div>
-              <Separator />
-              <div className="flex justify-between font-bold text-lg pt-2">
-                <span>Total</span>
-                <span>${(total * 1.08).toFixed(2)}</span>
+              <Separator className="bg-white/8" />
+              <SummaryRow label="Subtotal" value={`$${total.toFixed(2)}`} />
+              <SummaryRow label="Shipping" value="Free" highlight />
+              <SummaryRow label="Tax (8%)" value={`$${(total * 0.08).toFixed(2)}`} />
+              <Separator className="bg-white/8" />
+              <div className="flex items-center justify-between pt-2">
+                <span className="text-base text-white">Total</span>
+                <span className="number-display text-4xl text-white">${(total * 1.08).toFixed(2)}</span>
               </div>
             </CardContent>
           </Card>
         </div>
       </div>
+    </div>
+  );
+}
+
+function Field({ label, id, type = "text", placeholder }: { label: string; id: string; type?: string; placeholder: string }) {
+  return (
+    <div className="space-y-2">
+      <Label htmlFor={id}>{label}</Label>
+      <Input id={id} type={type} placeholder={placeholder} required />
     </div>
   );
 }

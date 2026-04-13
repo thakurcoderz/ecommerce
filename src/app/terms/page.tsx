@@ -1,20 +1,21 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
 export default function TermsOfServicePage() {
   return (
-    <div className="container py-16 px-4 max-w-4xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">Terms of Service</h1>
-        <p className="text-muted-foreground">Last updated: January 15, 2024</p>
+    <div className="page-shell py-12 md:py-16 lg:py-20">
+      <div className="mb-10 max-w-3xl space-y-4">
+        <p className="eyebrow">Legal</p>
+        <h1 className="section-display">Terms of service</h1>
+        <p className="lead-copy">Last updated: January 15, 2024</p>
       </div>
 
-      <Card className="border-muted">
+      <Card className="rounded-[28px]">
         <CardContent className="p-6 md:p-8 space-y-8">
           <section>
             <h2 className="text-2xl font-semibold mb-4">1. Agreement to Terms</h2>
             <p className="text-muted-foreground leading-relaxed">
-              By accessing and using LuxeStore ("we," "our," or "us"), you agree to be bound by these Terms of Service.
+              By accessing and using LuxeStore (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;), you agree to be bound by these Terms of Service.
               If you disagree with any part of these terms, you may not access our services.
             </p>
           </section>
@@ -24,7 +25,7 @@ export default function TermsOfServicePage() {
           <section>
             <h2 className="text-2xl font-semibold mb-4">2. Use License</h2>
             <p className="text-muted-foreground leading-relaxed mb-4">
-              Permission is granted to temporarily access the materials on LuxeStore's website for personal,
+              Permission is granted to temporarily access the materials on LuxeStore&apos;s website for personal,
               non-commercial transitory viewing only. This is the grant of a license, not a transfer of title.
             </p>
             <p className="text-muted-foreground font-medium mb-2">Under this license you may not:</p>

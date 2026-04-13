@@ -1,99 +1,112 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
+import { useState } from "react";
+import { Heart, ShoppingCart, Trash2 } from "lucide-react";
 import { useWishlist } from "@/lib/wishlist-store";
 import { useCart } from "@/lib/cart-store";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Heart, ShoppingCart, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { SectionHeading } from "@/components/ui/section-heading";
+import { TheaterPanel } from "@/components/ui/theater-panel";
+import { EmptyStatePanel } from "@/components/ui/empty-state-panel";
 
 export default function WishlistPage() {
   const { items, removeItem, clearWishlist } = useWishlist();
   const { addItem: addToCart } = useCart();
   const [addedItems, setAddedItems] = useState<Set<string>>(new Set());
 
-  const handleAddToCart = (item: any) => {
+  const handleAddToCart = (item: (typeof items)[number]) => {
     addToCart({
       id: item.id,
       name: item.name,
       price: item.price,
       image: item.image,
     });
-    setAddedItems(prev => new Set([...prev, item.id]));
+    setAddedItems((previous) => new Set([...previous, item.id]));
     setTimeout(() => {
-      setAddedItems(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(item.id);
-        return newSet;
+      setAddedItems((previous) => {
+        const next = new Set(previous);
+        next.delete(item.id);
+        return next;
       });
     }, 2000);
   };
 
   if (items.length === 0) {
     return (
-      <div className="container py-20 text-center max-w-2xl mx-auto px-4">
-        <div className="mb-6 flex justify-center">
-          <div className="rounded-full bg-muted p-6">
-            <Heart className="h-16 w-16 text-muted-foreground" />
-          </div>
-        </div>
-        <h1 className="text-2xl md:text-3xl font-bold mb-4">Your Wishlist is Empty</h1>
-        <p className="text-muted-foreground mb-8">
-          Save items you like to your wishlist. Review them anytime and easily add them to your cart.
-        </p>
-        <Link href="/products">
-          <Button size="lg">Discover Products</Button>
-        </Link>
+      <div className="page-shell py-20">
+        <EmptyStatePanel
+          icon={<Heart className="h-8 w-8 text-[#36F4A4]" />}
+          title="Your wishlist is empty"
+          description="Save products you want to revisit later. They&apos;ll stay here in a cleaner, calmer shortlist."
+          actions={
+            <Link href="/products">
+              <Button size="lg">Discover products</Button>
+            </Link>
+          }
+        />
       </div>
     );
   }
 
   return (
-    <div className="container py-10 px-4 max-w-7xl mx-auto">
-      <div className="flex items-center justify-between mb-10">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">My Wishlist</h1>
-          <p className="text-muted-foreground mt-2">
-            {items.length} {items.length === 1 ? 'item' : 'items'} saved
-          </p>
-        </div>
-        <Button variant="outline" onClick={clearWishlist} className="text-muted-foreground">
-          <Trash2 className="mr-2 h-4 w-4" />
-          Clear All
+    <div className="page-shell py-12 md:py-16 lg:py-20">
+      <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <SectionHeading
+          eyebrow="Wishlist"
+          title="Saved pieces worth revisiting."
+          description="Keep a shortlist of products you love, then move them into your cart when the time feels right."
+          className="max-w-2xl"
+        />
+        <Button variant="outline" onClick={clearWishlist}>
+          <Trash2 className="h-4 w-4" />
+          Clear all
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
         {items.map((item) => (
-          <Card key={item.id} className="group overflow-hidden transition-all hover:shadow-lg border-muted relative">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute top-2 right-2 z-10 bg-background/80 hover:bg-background rounded-full"
-              onClick={() => removeItem(item.id)}
-            >
-              <Heart className="h-5 w-5 fill-current text-red-500" />
-            </Button>
+          <TheaterPanel key={item.id} className="group overflow-hidden rounded-[28px] p-0">
+            <div className="relative overflow-hidden">
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                className="absolute right-3 top-3 z-10 border border-white/10 bg-[#02090A]/80"
+                onClick={() => removeItem(item.id)}
+              >
+                <Heart className="h-4 w-4 fill-current text-[#36F4A4]" />
+                <span className="sr-only">Remove from wishlist</span>
+              </Button>
 
-            <Link href={`/products/${item.id}`}>
-              <div className="aspect-square relative overflow-hidden bg-muted">
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                />
-              </div>
-            </Link>
-
-            <CardContent className="p-5">
-              <Link href={`/products/${item.id}`}>
-                <h3 className="font-semibold text-lg mb-1 line-clamp-1 hover:text-primary transition-colors">
-                  {item.name}
-                </h3>
+              <Link href={`/products/${item.id}`} className="block">
+                <div className="relative aspect-[4/4.5] w-full">
+                  <Image
+                    src={item.image}
+                    alt={item.name}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 25vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                </div>
               </Link>
-              <p className="text-sm text-muted-foreground mb-3">{item.category}</p>
-              <p className="font-bold text-xl mb-4">${item.price.toFixed(2)}</p>
+            </div>
+
+            <div className="space-y-4 p-5">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <Badge className="rounded-md px-3 py-1 text-[10px] tracking-[0.18em]">{item.category}</Badge>
+                  <Link href={`/products/${item.id}`}>
+                    <h2 className="mt-3 line-clamp-1 text-[1.2rem] font-[340] tracking-[-0.03em] text-white transition-colors group-hover:text-[#C1FBD4]">
+                      {item.name}
+                    </h2>
+                  </Link>
+                </div>
+                <p className="number-display text-3xl text-white">${item.price.toFixed(2)}</p>
+              </div>
+
+              <p className="line-clamp-2 text-sm leading-7 text-muted-foreground">{item.description}</p>
 
               <Button
                 className="w-full"
@@ -102,16 +115,16 @@ export default function WishlistPage() {
                 disabled={addedItems.has(item.id)}
               >
                 {addedItems.has(item.id) ? (
-                  <>✓ Added</>
+                  "Added to cart"
                 ) : (
                   <>
-                    <ShoppingCart className="mr-2 h-4 w-4" />
-                    Add to Cart
+                    <ShoppingCart className="h-4 w-4" />
+                    Add to cart
                   </>
                 )}
               </Button>
-            </CardContent>
-          </Card>
+            </div>
+          </TheaterPanel>
         ))}
       </div>
     </div>

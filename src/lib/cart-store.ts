@@ -23,21 +23,24 @@ type CartContextType = {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([]);
-
-  // Load cart from local storage on mount
-  useEffect(() => {
-    const savedCart = localStorage.getItem("cart");
-    if (savedCart) {
-      try {
-        setItems(JSON.parse(savedCart));
-      } catch (e) {
-        console.error("Failed to parse cart from local storage", e);
-      }
+  const [items, setItems] = useState<CartItem[]>(() => {
+    if (typeof window === "undefined") {
+      return [];
     }
-  }, []);
 
-  // Save cart to local storage whenever it changes
+    const savedCart = window.localStorage.getItem("cart");
+    if (!savedCart) {
+      return [];
+    }
+
+    try {
+      return JSON.parse(savedCart) as CartItem[];
+    } catch (e) {
+      console.error("Failed to parse cart from local storage", e);
+      return [];
+    }
+  });
+
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(items));
   }, [items]);
